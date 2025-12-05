@@ -1,9 +1,7 @@
-// App.tsx
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-// Perhatikan: Kita tidak lagi mengimport signInAnonymously karena sudah dihapus
 import LoginScreen from "./screens/LoginScreen";
 import ChatScreen from "./screens/ChatScreen";
 
@@ -16,9 +14,6 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
-  // Di sini kita TIDAK melakukan login otomatis anonim lagi.
-  // Login akan ditangani sepenuhnya oleh halaman LoginScreen.
-
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
@@ -31,8 +26,8 @@ export default function App() {
           name="Chat" 
           component={ChatScreen} 
           options={({ route }) => ({ 
-            title: route.params.name, // Judul header sesuai nama user
-            headerBackVisible: false  // Hilangkan tombol back default
+            title: route.params.name,
+            headerBackVisible: false 
           })}
         />
       </Stack.Navigator>

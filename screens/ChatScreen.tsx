@@ -26,12 +26,11 @@ export default function ChatScreen({ route, navigation }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
-    // 1. FITUR OFFLINE: Load data dari penyimpanan HP dulu
     const loadCache = async () => {
       try {
         const cached = await AsyncStorage.getItem('chat_history');
         if (cached) {
-          setMessages(JSON.parse(cached)); // Tampilkan chat lama dari HP
+          setMessages(JSON.parse(cached));
         }
       } catch (e) {
         console.log("Gagal load cache", e);
@@ -39,7 +38,6 @@ export default function ChatScreen({ route, navigation }: Props) {
     };
     loadCache();
 
-    // 2. FITUR ONLINE: Konek ke Firebase
     const q = query(messagesCollection, orderBy("createdAt", "asc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const msgs: Message[] = snapshot.docs.map(doc => ({
@@ -47,21 +45,18 @@ export default function ChatScreen({ route, navigation }: Props) {
         ...doc.data()
       } as Message));
       
-      setMessages(msgs); // Update tampilan dengan data baru
-      
-      // Simpan copy chat terbaru ke HP (Local Storage)
+      setMessages(msgs);
       AsyncStorage.setItem('chat_history', JSON.stringify(msgs));
     });
 
     return () => unsubscribe();
   }, []);
 
-  // Fungsi Kirim Pesan (Sudah diperbaiki agar input langsung kosong)
   const sendMessage = async () => {
     if (!message.trim()) return;
 
-    const textToSend = message; // Simpan teks ke variabel
-    setMessage(""); // UI langsung kosong biar cepat
+    const textToSend = message;
+    setMessage("");
 
     try {
       await addDoc(messagesCollection, {
@@ -70,14 +65,13 @@ export default function ChatScreen({ route, navigation }: Props) {
         createdAt: serverTimestamp()
       });
     } catch (error) {
-      setMessage(textToSend); // Balikin teks kalau gagal
+      setMessage(textToSend);
       Alert.alert("Error", "Gagal mengirim pesan. Cek koneksi internet.");
     }
   };
 
   const handleLogout = () => {
     signOut(auth).then(() => {
-      // Opsional: Hapus history saat logout agar user lain tidak bisa baca
       AsyncStorage.removeItem('chat_history');
       navigation.replace("Login");
     });
@@ -89,7 +83,6 @@ export default function ChatScreen({ route, navigation }: Props) {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={90}
     >
-      {/* Header dengan tombol Logout */}
       <View style={styles.header}>
         <Text style={styles.headerText}>User: {name}</Text>
         <Button title="Logout" color="red" onPress={handleLogout} />

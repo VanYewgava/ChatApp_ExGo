@@ -1,5 +1,4 @@
-// screens/LoginScreen.tsx
-import React, { useState, useEffect } from "react"; // Tambah useEffect
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../App";
@@ -12,17 +11,14 @@ export default function LoginScreen({ navigation }: Props) {
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
 
-  // --- TAMBAHAN KODE AUTO-LOGIN ---
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // Jika user ditemukan (sudah login), langsung pindah ke Chat
         navigation.replace("Chat", { name: user.email || "User" });
       }
     });
     return () => unsubscribe();
   }, []);
-  // --------------------------------
 
   const handleAuth = async () => {
     if (!email || !password) {
@@ -34,10 +30,8 @@ export default function LoginScreen({ navigation }: Props) {
       if (isRegister) {
         await createUserWithEmailAndPassword(auth, email, password);
         Alert.alert("Sukses", "Akun berhasil dibuat!");
-        // Tidak perlu navigasi manual, karena useEffect di atas akan otomatis jalan
       } else {
         await signInWithEmailAndPassword(auth, email, password);
-        // Tidak perlu navigasi manual, useEffect akan menanganinya
       }
     } catch (error: any) {
       Alert.alert("Gagal", error.message);
